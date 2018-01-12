@@ -7,4 +7,4 @@ email: mh4root@gmail.com
 
 image_path: "/images/posts/"
 nick: "Mh4x0f"
-markdown: redcarpet
+markdown: kramdown
