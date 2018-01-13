@@ -108,7 +108,8 @@ Data Payload
 <h3>Socket Raw na Prática :D Wellcome a Selva l33t Wilsoooooooon</h3>
 <p>Depois de resumir o encapsulamento de dados, iremos para parte prática da coisa... lembrando que python seria, mas interessante pois iriamos ver o pacote ao vivo sendo capturado, mas quem sabe um serie sobre python em breve. let's Go</p>
 
-``` c  
+{% highlight c++ %}
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -154,13 +155,14 @@ unsigned short comp_chksum(unsigned short *addr, int len) {
     return ((u_short) sum);
 
 }
-```
+
+{% endhighlight  %}
 
 
 <p>primeiro de tudo declaramos os header's, até comentei alguns deles, logo seguida vem duas estruturas para o ip header e tcp header, calma  ficará tudo claro em breve, o checksum é a  soma de verificação, é usado para detectar a corrupção de dados através de uma conexão isso quer dizer que qualquer erro que ocorrer na soma, Se um bit é invertida, um byte mutilado, ou alguma outra maldade acontece com um pacote, ele provavelmente  vai ser quebrado e não conseguirá entrar  os dados para o destino, qual motivo da criação dessa medida, então o checksum é uma garantia que o fluxo de dados está correto. No IPV4 essa soma  verificação para detectar a corrupção de cabeçalhos dos pacotes. ou seja, a origem, o destino e outras meta-dados. isso tudo para proteger o payload.  há e outra coisa o algoritmo de verificação do checksum é o mesmo tanto para TCP e IPV4.  também temos lá em cima a definição de uma estrutura que se você comparar com uma das imagens que citei acima como exemplo vera que nada mais é que a estrutura do nela temos o endereço de origem  e o endereço de destino, u_int32_t src_addr;  u_int32_t dst_addr; , ainda temos o padding né que é opcional nem irei usa-lo, tá mas pra que serve ? então o padding no cabeçalho TCP é usado para garantir que as extremidades do cabeçalho TCP  e dados começa num limite de 32 bits. O Padding ou preenchimento  não vamos generalizar mas quase sempre  consiste em apenas zeros para assegurar a parte do pacote de dados não está perdida.  Proto já diz tudo onde definimos que tipo de protocolo vai ser usado. </p>
 
 
-``` c
+{% highlight c++ %}
 int main(int argc, char *argv[]) {
 
 
@@ -209,14 +211,14 @@ int main(int argc, char *argv[]) {
     int iphdrlen = sizeof(struct iphdr);
     int tcphdrlen = sizeof(struct tcphdr);
     int datalen = 0;
-```
+{% endhighlight  %}
 
 Acima vem as definições de algumas coisinhas como, socket que já vimos nos paper passados, e também das estruturas que vamos passar alguns argumentos. dividir em blocos para não perdemos muito tempo na explicação tem muita coisa básico vou focar apenas nas partes que são importante para o paper.
 bloco 1 vemos apenas declarações de variais e de estruturas que são fundamentais no pacote.
 bloco 2 nessa parte vem muita coisa que já vimos sobre socket, criação e tratamento de erro, um função que até então não trabalhei é a socketopt() vai render umas linhas, o uso dessa função é bastante comum em socket raw lógico, Essa função é usada para setar opções num socket, o primeiro argumento claro, é nosso socket descritor, segundo vem o nível,o nível é usado para manipular opções no nível socket, tá como assim ? Por exemplo, para indicar que uma opção eh para ser interpretado pelo protocolo TCP, nível deve estar setado para o numero do protocolo TCP, que é 6. logo em seguida vem optname, Optname sao as opcoes propriamente ditas que serao setadas para o nosso arquivo socket.Elas sao passadas para o modulo do protocolo apropriado para interpretação. no nosso caso estamos usado o IP_HDRINCL podem nao serem validos caso esteja usando uma kernel antiga. depois o optval (constante nivel) Os parâmetros optval e optlen são usados ​​para acessar os valores de opção para setsockopt (). Para getsockopt () identificam um buffer no qual o valor para a opção solicitada (s) devem ser devolvidos. Para getsockopt (), optlen é um parâmetro de valor para os resultados, inicialmente contendo o tamanho do buffer apontado por optval, e modificado no retorno ao indicam o tamanho real do valor devolvido. Se nenhum valor opção é a ser fornecido ou devolvidos, optval pode ser NULL. no nosso caso, para habilitar uma opção booleana, ou zero se uma opção é para ser desabilitada. na verdade essa função não serve apenas para o que vou explicar e sim para milhões de utilidades, quem sabe em outro paper podemos usa-la e cita-la como um exemplo disso.
 bloco 3 apenas associamos as estruturas para preenchimento abaixo você poderá ver melhor como funciona, há também definimos o tamanho das estruturas são bem importante pois vamos precisa-las em breve.
 
-``` c++
+{% highlight c++ %}
    // bloco 1
     ip->frag_off = 0;
     ip->version = 4;
@@ -262,12 +264,12 @@ bloco 3 apenas associamos as estruturas para preenchimento abaixo você poderá 
     printf("TCP Checksum: %i\n", checksum);
     printf("Destination : %i\n", ntohs(tcp->dest));
     printf("Source: %i\n", ntohs(tcp->source));
-```
+{% endhighlight  %}
 
 Bloco 1 acredito que você já tenha uma noção de tudo isso, temos uma imagem que demonstra isso graficamente estamos falando o Header IP, onde tem algumas informações sobre requisições. indenficações e etc... veremos cada uma deles, primeiro a flag, frag_off O primeiro bit é reservado e definido como 0. DF (não fragmentar) controla a fragmentação do datagrama. MF (Mais fragmentos) Indica se há mais fragmentos de receber. Se este sinalizador definido como zero, significa que este é o último fragmento do datagrama. versão IPV4 né, A versão do protocolo de internet. ip->IHL este campo indica o tamanho do cabeçalho (isso também coincide com o deslocamento para os dados). O valor mínimo para este campo é 5 valor de 5 para o hl significa 20 bytes (5 * 4):D. A parte interessante o resto é o básico de redes requisições há outra coisa colocomos 1 no campo do syn, é claro é nosso tipo de requisição. e finalmente nosso ultimo arguento ip->window. que nada mais é que o campo de deslocamento fragmento, medido em unidades de blocos de oito bytes (64 bits), é de 13 bits de comprimento e especifica o deslocamento de um fragmento em particular em relação ao início do datagrama IP original unfragmented. O primeiro fragmento foi um desvio de zero. Isto permite um deslocamento de (2 máximo 13 - 1) × 8 = 65.528 bytes, o que excede o comprimento máximo de pacotes IP de 65.535 bytes com o tamanho do cabeçalho incluído (65.528 + 20 = 65.548 bytes).
 bloco 2 Esse também não tem muita explicação básico de C , apenas atribuição de alguns argumentos do header TCP da uma olhada em umas das figuras que você vai entender tudinho, nesse bloco basicamente preenchemos o HEader TCP e calculamos o Checksum. e depois com o dois Header preenchidos damos um print() no destino e na origem do pacote há lembrando usando socket raw podemos manipular e colocar o IP queremos assim não se sabe quem mandou o pacote, lembra do Nmap, então o argumento source-spoof acho que é assim é isso mesmo meu amigo, funciona quase assim, muitos DOS atttack usa esse tipo de socket para aproveitar do controle que tem usando esse tipo de socket. "a coisa mais linda de Deus um backdoor raw socket " frases do cooler_void >D, da uma olhada nos argumento da função comp_checksum os argumentos são passado contendo o tamanho de cada estruturas.
 
-``` c++
+{% highlight c++ %}
    // bloco 1
    to.sin_addr.s_addr = ip->daddr;
     to.sin_family = AF_INET;
@@ -294,10 +296,10 @@ bloco 2 Esse também não tem muita explicação básico de C , apenas atribuiç
 
     return 0;
 }
-```
+{% endhighlight %}
 
 Definir em dois blocos para acabar logo com essa parte :D, também não tem muito o que explicar por aqui, boco 1 básico de socket já falei em outros papers, mas quem não tiver lembrando, atribuirmos o ip destino, a família do socket e porta pra onde o pacote vai ser enviado. Bloco 2a função sendto() já conhecemos, básico de socket, comparamos se o retorno é igual a -1 isso quer dizer que não ouvi resposta do alvo, uma função recv() né é normalmente usado apenas em um ligado socket e é idêntico ao Recvfrom () com um NULL src_addr argumento. passamos o descritor o buffer, né quantidade bytes,e a frag que Especifica o tipo de recepção da mensagem. vem agora a os print() né onde é impresso o TTL que até esqueci de falar dele Time to Live, TTL impede que um pacote de dados de circular indefinidamente e também é um campo de 8 bits veja nas imagens que mostrei logo no começo, O tempo máximo em segundos o datagrama pode permanecer no sistema de internet, cada computador processa o datagrama deve diminuir o valor TTL por pelo menos um. e, se este campo atinge o valor zero, o datagrama deve ser descartado e não mais entregue.
-``` c++
+{% highlight c++ %}
 // Extra ;D
 struct icmpheader {
  unsigned char icmp_type;
@@ -306,27 +308,27 @@ struct icmpheader {
  unsigned short int icmp_id;
  unsigned short int icmp_seq;
 }; / *  icmp: 8 bytes (= 64 bits) * /
-```
+{% endhighlight %}
 O que temos acima é a estrutura no caso do ICMP, o implemento do ICMP muda um pouco, mas segue a mesma linhas. icmp_type o tipo de mensagem, por exemplo 0 - echo resposta, 8 - echo pedido, 3 - destino inacessível. olhar em para todos os tipos.
 icmp_code isso é significativo ao enviar uma mensagem de erro (unreach), e especifica o tipo de erro. novamente, consulte o arquivo de inclusão para mais.
 icmp_cksum a soma de verificação para o cabeçalho icmp + dados. mesmo que a soma de verificação IP. Nota: Os 32 bits seguintes em um pacote ICMP pode ser usado de muitas maneiras diferentes. icmp_id usado na solicitação de eco / resposta mensagens, para identificar o pedido. icmp_seq: identifica a seqüência de mensagens de eco, se mais de um é enviado.
 
 O User Datagram Protocol é um protocolo de transporte para as sessões que precisa dados do Exchange. Ambos os protocolos de transporte, UDP e TCP fornecer 65535 diferente portas de origem e destino. A porta de destino é usado para conectar-se um serviço específico nessa porta. Ao contrário do TCP, UDP não é confiável, uma vez que ele não usa números de seqüência e conexões stateful. Isto significa UDP datagramas podem ser falsificados, e pode não ser confiável (por exemplo, eles podem ser perdidos despercebido), uma vez que não são reconhecidos usando respostas e números de seqüência. vamos dar uma olhada no header UDP.
 
-``` c++
+{% highlight c++ %}
 struct udpheader {
  unsigned short int uh_sport;
  unsigned short int uh_dport;
  unsigned short int uh_len;
  unsigned short int uh_check;
 }; / * Comprimento total cabeçalho udp: 8 bytes (= 64 bits) * /
-```
+{% endhighlight %}
 uh_sport: A porta de origem que uma ligação do cliente () s para, eo servidor contactado responderemos de volta para a fim de direcionar suas respostas para o cliente.
 uh_dport: A porta de destino que um servidor específico pode ser contactado por diante.
 uh_len: O comprimento de dados do cabeçalho e carga UDP em bytes.
 uh_check: A soma de verificação de cabeçalho e dados, consulte soma de verificação IP.
 
-``` c++
+{% highlight c++ %}
 Simples Pacote Sniffer
 
 #include <stdio.h>
@@ -434,7 +436,7 @@ int main(int argc, char **argv) {
     // clean up
     close(sock);
 }
-```
+{% endhighlight %}
 Esse programa apenas captura dados Ethernet , a estrutura BPF_code faz justamente isso configura qual tipo de pacote com as especificações de cada pacote, a função setsockopt é justamente para isso mesmo, setar um filtro no socket. iphead == 0x45 isso significa que é apenas para imprimir pacotes IPV4, O "5" em "45" é o tamanho do cabeçalho IP, em unidades de 4 bytes, de modo que é de 20 bytes. se você deseja filtrar os dados que estão sendo transportados através de TCP, você tem que pular o cabeçalho TCP (que é de comprimento variável, assim como é o cabeçalho IP). o resto é print() mostrando de onde e pra onde está indo o pacote.
 
 Conclusão
