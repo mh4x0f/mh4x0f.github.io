@@ -445,6 +445,7 @@ Referências:
 http://pt.wikipedia.org/wiki/TCP/IP
 http://www.opennet.ru/base/sec/p49-15.txt.html
 http://ubuntuforums.org/showthread.php?t=954426
+https://dl.packetstormsecurity.net/mag/vipercorp/vcc-0x01.txt
 http://nunix.fr/index.php/programmation/1-c/58-rawsocket-to-forge-udp-packets
 http://jkolb.com.br/wp-content/uploads/2016/06/modelo-osi2.png
 </pre>
