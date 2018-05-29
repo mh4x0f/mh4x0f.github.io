@@ -406,7 +406,7 @@ O link http://bit.ly/2f1uwGD é exatamente o código que faz download e uma imag
 ### Conclusão
 
 Dentre todas opções dos dispositivos encontrado no mercado,o **digspark** é o mais barato de todos (não é a toa que eu escolhi esse) sem contar que praticamente em termo de efetividade, ele não deixa a desejar. Lógico que o **rubberducky** pode se adequar a qualquer senário por ter vários payloads para diferentes. Usar um backdoor http ou https é a melhor solução, pois com qualquer servidor remoto (até free) com support a python pode ser usado para montar um server. Em relação a custo benefício, você vai encontrar o digspark por $ 1 dólar na net sendo que um rubberducky cega a ser $ 45 fucking dólar. Se você encontrar um rapaz em alguma conferência com um desse como pingente, prazer **mh4x0f**.
-
+![pingente](/images/badUSB/digisparkpingente.jpg)
 
 Referências:
 ```
