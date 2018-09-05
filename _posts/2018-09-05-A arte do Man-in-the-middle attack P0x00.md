@@ -9,7 +9,7 @@ comments: true
 
 Iae Pessoas tudo bem ? Há alguns anos atrás comecei a codar um modulo sniffer de pacotes usando [scapy](https://scapy.net/) para a tool WiFi-Pumpkin (**WP**) do **PocL4bs Team**, onde sou o principal dev. Es que estou aqui para mostrar algumas coisas interessante que acabei aprendendo no processo de desenvolvimento. Esse será meu primeiro post sobre python de muitos. let go...
 
-Quando comecei a implementação do módulo TCP proxy, antes disso tava eu estava procurando uma maneira melhor de fazer redirect de DNS request usando **scapy** sem apelar para **iptables**(diretamente). A ideia era criar um **dns spoof** que consiga redirecionar algums domínio selecionados para uma página de phishing por exemplo, no caso do **WP** que não precisa fazer **arpspoof** pois os dados da vitima já passam pelo atacante, com essa ideia em mente comecei a buscar informações sobre.
+Quando comecei a implementação do módulo TCP proxy, antes disso estava procurando uma maneira melhor de fazer redirect de DNS request usando **scapy** sem apelar para **iptables**(diretamente). A ideia era criar um **dns spoof** que consiga redirecionar algums domínio selecionados para uma página de phishing por exemplo, no caso do **WP** que não precisa fazer **arpspoof** pois os dados da vitima já passam pelo atacante, com essa ideia em mente comecei a buscar informações sobre.
 
 ### Intrudução
 
@@ -17,11 +17,11 @@ Se você leitor não sabe como funciona um ataque de **man-in-the-middle**, let 
 
 "O wikipedia me diz que "O man-in-the-middle (pt: Homem no meio, em referência ao atacante que intercepta os dados) é uma forma de ataque em que os dados trocados entre duas partes (por exemplo, você e o seu banco), são de alguma forma interceptados, registrados e possivelmente alterados pelo atacante sem que as vitimas se apercebam."
 
-Essa é a explicação está correta e tecnicamente falando funciona da seguinte forma, digamos que de alguma forma o atacante precisa fazer com que os pacotes enviado pela vítima (**sem proteção**) precise passar por ele para depois ser enviado para o **host destino** ou melhor dizendo, para o servidor. dessa forma, é possível modificar os pacotes (do protocolo http) da forma que quisermos e então fazer modificaçẽos tais como: remover header, adicionar header, remover informações, alterar o código do corpo da requisição, redirecionar para outro website e por fim capturar as credenciais (**PASSWORD**) envida pela vitima. Existe várias formas de fazer esse tipo de ataque uma dela e mais comum é fazer uma **baguncinha** na rede fazendo com que os dados antes de ser mandado para o **gateway local**  seja mandado pra você e logo em seguida seja enviado para o real destino o webserver original da requisição.
+Essa é a explicação está correta e tecnicamente falando funciona da seguinte forma, digamos que de alguma forma o atacante precisa fazer com que os pacotes enviado pela vítima (**sem proteção**) precise passar por ele para depois ser enviado para o **host destino** ou melhor dizendo, para o servidor. dessa forma, é possível modificar os pacotes (do protocolo http) da forma que quisermos e então fazer modificações tais como: remover header, adicionar header, remover informações, alterar o código do corpo da requisição, redirecionar para outro website e por fim capturar as credenciais (**PASSWORD**) envida pela vitima. Existe várias formas de fazer esse tipo de ataque uma dela e mais comum é fazer uma **baguncinha** na rede fazendo com que os dados antes de ser mandado para o **gateway local**  seja mandado pra você e logo em seguida seja enviado para o real destino o webserver original da requisição.
 
 ![meme](/images/posts/meme/baguncinha.jpg)
 
-É possível fazer essa **baguncinha** usando uma tool chamada de  **arpspoof** (vem por default instalado no kali linux) na rede local, você pode programar seu próprio **arpspoof** ( com python mesmo ) fique tranquilo que iremos chegar lá em breve. A ideia por trás (arpspoof) ou melhor dizendo do ataque no protocolo **arp** é fazer uma alteração na tabela **arp** (Address Resolution Protocol – RFC 826) ou "portugueisando" **spoofar** de tal forma que possa confundir o gateway (roteador) e a máquina alvo, na verdade, essa mofidicação irá fazer com que todos os pacotes que antes seria enviado para o roteador (gateway), sejam enviado para a máquina do atacante que agora está sendo o novo roteador da rede local. o diagrama fica assim:
+É possível fazer essa **baguncinha** usando uma tool chamada de  **arpspoof** (vem por default instalado no kali linux) na rede local, você pode programar seu próprio **arpspoof** ( com python mesmo ) fique tranquilo que iremos chegar lá em breve. A ideia por trás (arpspoof) ou melhor dizendo do ataque no protocolo **arp** é fazer uma alteração na tabela **arp** (Address Resolution Protocol – RFC 826) ou "portuguesando" **spoofar** de tal forma que possa confundir o gateway (roteador) e a máquina alvo, na verdade, essa mofidicação irá fazer com que todos os pacotes que antes seria enviado para o roteador (gateway), sejam enviado para a máquina do atacante que agora está sendo o novo roteador da rede local. o diagrama fica assim:
 ```
   +-------------+  <--------------------------+  +-------------+  ----->  +---------------+
   |    Alvo     |     Original Tragetória        |  Router     |          | Aplicação web |
@@ -65,7 +65,7 @@ Para entender como funciona **NFqueue** precisamos entender como a arquitetura d
 ```
 iptables -I INPUT -d 192.168.0.0/24 -j NFQUEUE --queue-num 1
 ```
-Essa fila que pacotes é implementada como uma lista encadeada, que os elementos são os pacotes e os metadados (linux **skb** socket buffer), dessa forma você acabando entendendo o perigo como algumas rootkits para linux se esconde na rede (detalhe mesmo em userland), quando você tiver um tempo pesquise sobre o protocolo que fica entre o userspace e kernel chamado **nfnetlink**, sem spoiler. Olha só como é simples usar esse módulo para controlar o fluxo de packets na rede.
+Essa fila de pacotes é implementada como uma lista encadeada, que os elementos são os pacotes e os metadados (linux **skb** socket buffer), dessa forma você acabando entendendo o perigo como algumas rootkits para linux se esconde na rede (detalhe mesmo em userland), quando você tiver um tempo pesquise sobre o protocolo que fica entre o userspace e kernel chamado **nfnetlink**, sem spoiler. Olha só como é simples usar esse módulo para controlar o fluxo de packets na rede.
 
 ``` py
 from netfilterqueue import NetfilterQueue
@@ -127,7 +127,7 @@ Se você não conhece TCP/IP sugiro fortemente que leia o livro "tcp illustrated
 >
 The Domain Name System (DNS) is a hierarchical decentralized naming system for computers, services, or other resources connected to the Internet or a private network. It associates various information with domain names assigned to each of the participating entities.
 
-O protocolo DNS usa UDP ( User Datagram Protocol ), não sei se ta certo( pesquise sobre isso e corrija se necessário) mas o protocolo UDP é usado pois as requisições precisam ser rapidas e como o TCP é bem mais chato de trabalhar pois.TCP são mais "seguros", a melhor opção é usar UDP mesmo. A porta associada como já citei acima é a 53 para server requests, os DNS queries  são requisições enviada como se fosse um pedido um request enviado pelo cliente o server precisa mandar outro packet UDP reply. DNS packets overview:
+O protocolo DNS usa UDP ( User Datagram Protocol ), não sei se ta certo( pesquise sobre isso e corrija se necessário) mas o protocolo UDP é usado pois as requisições precisam ser rapidas e como o TCP é bem mais chato de trabalhar pois são mais "seguros", a melhor opção é usar UDP mesmo. A porta associada como já citei acima é a 53 para server requests, os DNS queries  são requisições enviada como se fosse um pedido um request enviado pelo cliente o server precisa mandar outro packet UDP reply. DNS packets overview:
 
 ![DNS](/images/posts/DNS/dnspackets.png)
 
@@ -157,7 +157,7 @@ packet.accept()
 
 #### ARP spoofing ou ARP cache poisoning
 
-Você leitor vai pensando como se defender desse tipo de ataque, lógico no final irei apresentar algumas soluções, porque é um ataque simples de fazer e na maioria das vezes o atacante consegue éxito seja lá qual for a intensão dele, até mesmo tirar a conexão com a internet como algumas aplicativos fazem no android, por exemplo **WiFikill** que usa esssa mesma técnica a partir de um aparelho "rootiado". só pare resfescar a sua mente wiki:
+Você leitor vai pensando como se defender desse tipo de ataque, lógico no final irei apresentar algumas soluções, porque é um ataque simples de fazer e na maioria das vezes o atacante consegue éxito seja lá qual for a intenção dele, até mesmo tirar a conexão com a internet como algumas aplicativos fazem no android, por exemplo **WiFikill** que usa esssa mesma técnica a partir de um aparelho "rootiado". só pare resfescar a sua mente wiki:
 
 >
 ARP spoofing ou ARP cache poisoning é uma técnica em que um atacante envia mensagens ARP (Address Resolution Protocol) com o intuito de associar seu endereço MAC ao endereço IP de outro host, como por exemplo, o endereço IP do gateway padrão, fazendo com que todo o tráfego seja enviado para o endereço IP do atacante ao invés do endereço IP do gateway.
@@ -242,11 +242,11 @@ class ThreadARPPoison(Thread):
 
 ```
 
-Mas como eu irei saber se realmente está funcionando o ataque ? para responder essa pergunta voltamos para o conhecimento de rede, para que uma ataque desse funcione alguma coisa teria que ser altera e essa coisa é examante a tabela ARP que no caso como você ta fazendo esses teste em um ambiente simulado podemos verificar se essas modificações realmente estão acontecendo. no windows basta abrir o **cmd** e digitar o comando abaixo :
+Mas como eu irei saber se realmente está funcionando o ataque ? para responder essa pergunta voltamos para o conhecimento de rede, para que uma ataque desse funcione alguma coisa teria que ser altera e essa coisa é examante a tabela ARP que no caso, como você ta fazendo esses teste em um ambiente simulado podemos verificar se essas modificações realmente estão acontecendo. no windows basta abrir o **cmd** e digitar o comando abaixo :
 ```
 arp -a
 ```
-Esse comando é básicamente para verificar se a tabela arp está envenenada como o pessoal costuma referenciar, a saída desse comando é algum assim:
+Esse comando é básicamente para verificar se a tabela arp está "envenenada" como o pessoal costuma referenciar, a saída desse comando é algum assim:
 ```
 C:\Users\lab>arp -a
 
@@ -350,7 +350,14 @@ Para se proteger desse tipo ataque, você pode evitar acessar redes desconhecida
 netsh interface ipv4 add neighbors "Local Area Connection" Gateway MAC
 ```
 
-Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador". Bricadeiras a parte isso é tudo pessoal, espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas, qualquer crítica pode deixar nós comentários recomendo fortemente :D, até um futuro próximo.
+Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador".
+
+
+### Conclusão
+
+Bricadeiras a parte isso é tudo pessoal, espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas. Portanto, obtemos que usar o **NetfilterQueue** é a melhor opção por enquanto pois temos um maior controle sobre o pacote, podendo usar para diferentes fim, analise de malware, ataque direcionado, ataque em determina aplicação ou até mesmo implementação de controle de acesso. Em fim, as possibilidades são muitas só depende agora dá sua criatividade.
+
+Qualquer crítica pode deixar nós comentários recomendo fortemente :D, até um futuro próximo.
 
 by: Marcos Bomfim a.k.a mh4x0f
 
