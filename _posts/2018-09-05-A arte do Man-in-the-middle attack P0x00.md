@@ -19,7 +19,7 @@ Se você leitor não sabe como funciona um ataque de **man-in-the-middle**, let 
 
 Essa é a explicação está correta e tecnicamente falando funciona da seguinte forma, digamos que de alguma forma o atacante precisa fazer com que os pacotes enviado pela vítima (**sem proteção**) precise passar por ele para depois ser enviado para o **host destino** ou melhor dizendo, para o servidor. dessa forma, é possível modificar os pacotes (do protocolo http) da forma que quisermos e então fazer modificações tais como: remover header, adicionar header, remover informações, alterar o código do corpo da requisição, redirecionar para outro website e por fim capturar as credenciais (**PASSWORD**) envida pela vitima. Existe várias formas de fazer esse tipo de ataque uma dela e mais comum é fazer uma **baguncinha** na rede fazendo com que os dados antes de ser mandado para o **gateway local**  seja mandado pra você e logo em seguida seja enviado para o real destino o webserver original da requisição.
 
-![meme](/images/posts/meme/baguncinha.jpg)
+![meme](/images/memes/baguncinha.jpg)
 
 É possível fazer essa **baguncinha** usando uma tool chamada de  **arpspoof** (vem por default instalado no kali linux) na rede local, você pode programar seu próprio **arpspoof** ( com python mesmo ) fique tranquilo que iremos chegar lá em breve. A ideia por trás (arpspoof) ou melhor dizendo do ataque no protocolo **arp** é fazer uma alteração na tabela **arp** (Address Resolution Protocol – RFC 826) ou "portuguesando" **spoofar** de tal forma que possa confundir o gateway (roteador) e a máquina alvo, na verdade, essa mofidicação irá fazer com que todos os pacotes que antes seria enviado para o roteador (gateway), sejam enviado para a máquina do atacante que agora está sendo o novo roteador da rede local. o diagrama fica assim:
 ```
@@ -85,7 +85,7 @@ nfqueue.unbind()
 ```
 Imagine agora você fazer **from scapy.all import \*\** :D.
 
-![meme2](/images/posts/meme/diabo.png)
+![meme2](/images/memes/diabo.png)
 
 "Combar" o **scapy** + **NetfilterQueue** é dizer para rede que você agora tem total controle sobre tudo, podemos também usar esse método para fazer analise de malware que de alguma forma se comunica em uma porta específica ou até mesmo um tipo de pacote específico. por exemplo, você pode controlar os pacotes enviados  para uma determinada porta e modifica-lo como quiser.
 ``` sh
@@ -129,7 +129,7 @@ The Domain Name System (DNS) is a hierarchical decentralized naming system for c
 
 O protocolo DNS usa UDP ( User Datagram Protocol ), não sei se ta certo( pesquise sobre isso e corrija se necessário) mas o protocolo UDP é usado pois as requisições precisam ser rapidas e como o TCP é bem mais chato de trabalhar pois são mais "seguros", a melhor opção é usar UDP mesmo. A porta associada como já citei acima é a 53 para server requests, os DNS queries  são requisições enviada como se fosse um pedido um request enviado pelo cliente o server precisa mandar outro packet UDP reply. DNS packets overview:
 
-![DNS](/images/posts/DNS/dnspackets.png)
+![DNS](/images/DNS/dnspackets.png)
 
 Com scapy module podemos reescrever esse tipo de requisição muito fácil, e posteriomente montar um novo pacote contendo a requição alterada. Dessa forma, podemos desmontar o pacote que o cliente enviou e pegar apenas a query onde contem o domain que ele deseja acessar tipo **example.com**.
 
@@ -166,7 +166,7 @@ Interpretando o texto acima, pereceba que a única coisa que o atacante faz é m
 
 Para montar o nosso packet ARP spoofing, precisamos apenas de duas informações como citei acima **sourceMac** and **destMAC**, não irei explicar cada um dos campos do pacotes pois essas informações é por sua conta amigo. diagrama:
 
-![arp_packet](/images/posts/DNS/arp.png)
+![arp_packet](/images/DNS/arp.png)
 
 #### thread 1
 
