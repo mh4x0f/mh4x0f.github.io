@@ -52,7 +52,7 @@ Usando qualquer uma das alternativas você irá obter o mesmo resultado, ou seja
 
 ### Packets on the fly
 
-Normalmente essa parte é a que muitos tutoriais na internet acaba apelando para o **iptables** que serve para adicionar uma regra de firewall a fim de redicionar as requisições de DNS para maquina do atacante. No entanto, usar o **iptables** acaba perdendo performance porque todos os pacotes para porta 53 seram redirecionados para um determinado serviço, que geralmente são um webservices rodando uma pagina fake de algum site, gerando um delay na conexão. além disso, se o ataque for direcionado para várias máquina algumas ficará sem acesso a internet. Pensando nisso resolvi pesquisar como melhorar essa interação de tal forma que possa ter um melhor aproveitamento e que pudesse ter um controle maior e mais direcionado na rede, alguns dias se passaram e acabei achando uma lib em python que resolvia meus problemas e ainda melhor parte sem implementar do zero. o módulo do python é o [NetfilterQueue](https://pypi.org/project/NetfilterQueue/).
+Normalmente essa parte é a que muitos tutoriais na internet acaba apelando para o **iptables**, que serve para adicionar uma regra de firewall a fim de redicionar as requisições de DNS para maquina do atacante. No entanto, usar o **iptables** acaba perdendo performance porque todos os pacotes para porta 53 seram redirecionados para um determinado serviço, que geralmente tem um webservices rodando uma pagina fake de algum site, gerando um delay na conexão. Pensando nisso resolvi pesquisar como melhorar essa interação de tal forma que possa ter um melhor aproveitamento e que pudesse ter um controle maior e mais direcionado na rede. Alguns dias se passaram e acabei achando uma lib em python que resolvia meus problemas e ainda melhor parte sem implementar do zero. o módulo do python é o [NetfilterQueue](https://pypi.org/project/NetfilterQueue/).
 
 ```
 NetfilterQueue provides access to packets matched by an
@@ -115,15 +115,15 @@ if __name__ == '__main__':
     sys.exit(1)
 ```
 
-Se importarmos o módulo do scapy podemos mofificar,remontar, extrair e enviar o pacote como se fosse o pacote original. Com essa ideia resolvi criar meu próprio **dnsspoof** que iria criar um handler da porta 53 UDP para filtrar apenas os pacotes que seria requisições de **DNS** e dessa forma permitindo fazer redirecionamento para qualquer **webservice**. O scapy oferece suporte para detectar qualquer tipo de pacotes sem precisar fazer na mão, inclusive é possível saber até a camada antes de fazer qualquer modificação no pacote evitando pacotes quebrados por não ser do mesmo tipo.
+Se importarmos o módulo do scapy podemos mofificar,remontar, extrair e enviar o pacote. Com essa ideia resolvi criar meu próprio **dnsspoof** que iria criar um handler da porta 53 UDP para filtrar apenas os pacotes que seria requisições de **DNS** e dessa forma permitindo fazer redirecionamento para qualquer **webservice**. O scapy oferece suporte para detectar qualquer tipo de pacotes sem precisar fazer na mão, inclusive é possível saber até a camada antes de fazer qualquer modificação no pacote evitando pacotes quebrados por não ser do mesmo tipo.
 
 OBS:
 >
-Só lembrando que tive extrema dificudade para rodar esse código **threaded** na marioria das tentativas a aplicação congelou (sinceramente não sei o porque talvez seja por ta usando esse tipo de filtro), foi preciso rodar em outra Process thread separadamente..
+Só lembrando que tive extrema dificudade para rodar esse código **threaded** nas mariorias das tentativas a aplicação congelou (sinceramente não sei o porque talvez seja por ta usando esse tipo de filtro), foi preciso rodar em outra Process thread separadamente..
 
 ### DNS (Domain Name System)
 
-Se você não conhece TCP/IP sugiro fortemente que leia o livro "tcp illustrated" ou leia a **RFC** mesmo sendo um livro antigo, não mudou muita coisa, só foi acrescentada algumas camadas. defição:
+Se você não conhece TCP/IP sugiro fortemente que leia o livro "tcp illustrated" ou leia a **RFC** mesmo sendo um livro antigo não mudou muita coisa, só foi acrescentada algumas camadas. defição:
 >
 The Domain Name System (DNS) is a hierarchical decentralized naming system for computers, services, or other resources connected to the Internet or a private network. It associates various information with domain names assigned to each of the participating entities.
 
@@ -143,7 +143,17 @@ def callback(self,packet):
         print(pkt[DNS].qd.qname[:len(str(pkt[DNS].qd.qname))-1]) # www.example.com
 ```
 
-Sabendo disso, podemos remontar o packet modificando apenas **rdata** contendo o endereço IP do web server, podemos ainda redicionar o cliente para qualquer webserver sem alterar na URL no browser.
+```
+###[ DNS Resource Record ]###
+   rrname= 'www.example.com.'
+   type= A
+   rclass= IN
+   ttl= 294
+   rdlen= 4
+   rdata= '93.184.216.34'
+```
+
+Podemos remontar o packet modificando apenas **rdata** contendo o endereço IP do web server, podemos ainda redicionar o cliente para qualquer webserver sem alterar na URL no browser.
 
 ``` python
 spoofed_pkt = IP(dst=pkt[IP].src, src=pkt[IP].dst)/\
@@ -154,6 +164,18 @@ packet.set_payload(str(spoofed_pkt))
 send(spoofed_pkt,verbose=False)
 packet.accept()
 ```
+
+```
+###[ DNS Resource Record ]###
+   rrname= 'www.example.com.'
+   type= A
+   rclass= IN
+   ttl= 294
+   rdlen= 4
+   rdata= 'IP TO REDIRECT'
+```
+
+Como eu já mensionei anteriomente o **scapy** já da suporte para criar um novo packet do zero pegando as informações contidas no packet original, isso ajuda bastante porque fazer isso na mão byte a byte requer tempo e dinheiro, claro que dessa forma o você vai aprender muito mais sobre os campos do pacotes e do protocolo em si. uma boa prática é usar o scapy + **wireshark** para fazer esse tipo de análise.
 
 #### ARP spoofing ou ARP cache poisoning
 
@@ -274,14 +296,16 @@ Para se proteger desse tipo ataque, você pode evitar acessar redes desconhecida
 netsh interface ipv4 add neighbors "Local Area Connection" Gateway MAC
 ```
 
-Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador". Isso é tudo pessoal.
+
+Para mobile a dica é use aplicativos para detectar se access point é realmente verdadeiro, sim existe aplicações free que analise o tipo de pacote enviado e dessa forma da pra saber se tem lá um **hostapd**, outra dica simples é não usar o browser do seu aparelho até mesmo o chrome que tem protoções como **HSTS** e etc. Por último e não menos importante temos a melhor solução de todas, essa é a solução que funciona para qualquer sistema operacional,"remova o cabo da internet ou do roteador". Isso é tudo pessoal.
 
 
 ### Conclusão
 
-Espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas. Portanto, obtemos que usar o **NetfilterQueue** é a melhor opção, pois temos um maior controle sobre o pacote podendo usar para diferentes fim: analise de malware, ataque direcionado, ataque em determina aplicação ou até mesmo implementação de controle de acesso. Em fim, as possibilidades são muitas só depende agora dá sua criatividade.
+Portanto, apesar que man-in-the-middle seja uma técnica antiga, ela ainda proprociona uma amaeça muito grande para o usuário comum e empresas no geral. Analizando os resultados obtidos, temos que usar o **NetfilterQueue** é a melhor opção, pois temos um maior controle sobre o pacote podendo usar para diferentes fim: analise de malware e pesquisa de vulnerabilidade em aplicações web. Em fim, as possibilidades são muitas só depende agora dá sua criatividade,
+espero que tenha ajudado algum curioso como eu que sempre está aprendendo coisas novas.
 
-Qualquer crítica pode deixar nós comentários recomendo fortemente :D, até um futuro próximo.
+Qualquer crítica pode deixar nos comentários recomendo fortemente :D, até um futuro próximo.
 
 by: Marcos Bomfim a.k.a mh4x0f
 
