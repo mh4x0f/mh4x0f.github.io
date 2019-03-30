@@ -17,6 +17,5 @@ autodidata, guitarrista, jogador (dibrador) e pugilista (#BoxeBrasil).
 Marcos Bomfim (mh4x0f)
 P0cL4bs Team 
 
-- [**Email**](mh4root@gmail.com)
 - Github :: [**mh4x0f**](https://github.com/mh4x0f)
 - Twitter :: [**mh4x0f**](https://twitter.com/mh4x0f)
