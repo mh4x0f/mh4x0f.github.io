@@ -25,9 +25,13 @@ A resposta é não, infelizmente não tenho como englobar o pessoal que ta inici
 OBS: Primeiro remova o Kali Linux da máquina, isso já é um bom começo.
 
 0 - Programação básica em python [python para zumbis](https://www.pycursos.com/python-para-zumbis/)
+
 1 - Redes de computadores (Protocolos, modelo OSI, roteamento, comunicação de redes)
+
 2 - Linux em geral (comandos, [guiadofoca iniciante](https://guiafoca.org/), curso de linux, )
+
 3 - diferencial (saber o funcionamento de algumas ataques - hacking)
+
 4 - diferencial [curso de C mentebinária](https://www.youtube.com/watch?v=oZeezrNHxVo&list=PLIfZMtpPYFP5qaS2RFQxcNVkmJLGQwyKE) - Fernando Mercês
 
 Sabendo pelo o menos 3 itens dessa lista, você conseguirá acompanhar o canal e o blog.Entenda que estudar base nesse momento é essencial, mas quais são essas bases ? Na lista que coloquei acima tem algumas, mas vai muito além disso.
