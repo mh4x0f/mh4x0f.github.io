@@ -30,6 +30,10 @@ Para aqueles me acompanham, comentando e interagindo, estou disponibilizando 10 
 
 ![HACKTHEPLANET](https://i.ytimg.com/vi/u3CKgkyc7Qo/hqdefault.jpg)
 
+### update
+
+As 10 vagas foram esgotadas, mas o cupom vou tentar manter metade do preço do curso. ^^ 
+
 Curso Udemy: [Construindo security tools em python](https://www.udemy.com/course/construindo-security-tools-em-python/)
 
 Canal: [MH4X0F](https://www.youtube.com/channel/UC_MiXXdVv-wPLHPk8sJ868A)
