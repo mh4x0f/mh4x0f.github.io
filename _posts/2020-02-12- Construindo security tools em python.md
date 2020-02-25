@@ -32,7 +32,7 @@ Para aqueles me acompanham, comentando e interagindo, estou disponibilizando 10 
 
 ### update
 
-As 10 vagas foram esgotadas, mas o cupom vou tentar manter metade do preço do curso. ^^ 
+As 10 vagas foram esgotadas, mas o cupom vou tentar manter uma promoção curso. ^^ 
 
 Curso Udemy: [Construindo security tools em python](https://www.udemy.com/course/construindo-security-tools-em-python/)
 
