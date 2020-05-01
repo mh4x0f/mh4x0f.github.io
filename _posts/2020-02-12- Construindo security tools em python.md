@@ -25,14 +25,6 @@ O conhecimento que você aprenderá com este curso é literalmente uma arma, sab
 - básico do sistema operacional linux
 - básico de redes de computadores
 
-### Bônus Para Os Leitores 
-Para aqueles me acompanham, comentando e interagindo, estou disponibilizando 10 vagas grátis no curso. Tenha em mente que outras pessoas também lêem o blog e tem direito a vaga, **então não compartilhe com outras pessoas o cupom**. Esse cupom será exclusivo e válido por 30 dias ou até completar 10/10, Espero que gostem do curso, Bons Estudos! cupom: **"A famosa frase em caixa alta sem espaço"** 
-
-![HACKTHEPLANET](https://i.ytimg.com/vi/u3CKgkyc7Qo/hqdefault.jpg)
-
-### update
-
-As 10 vagas foram esgotadas, mas o cupom vou tentar manter uma [promoção curso](https://www.udemy.com/course/construindo-security-tools-em-python/?couponCode=HELLOFRIEND). ^^ 
 
 Curso Udemy: [Construindo security tools em python](https://www.udemy.com/course/construindo-security-tools-em-python/)
 
