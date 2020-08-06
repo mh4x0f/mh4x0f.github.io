@@ -97,7 +97,7 @@ Dentro do pacote principal, **RadioTap**, temos outras camadas que contém outro
         if "\x00".encode() not in pkt[Dot11Elt].info and pkt[Dot11Elt].info != ""
         else "Hidden SSID"
     )
-``
+```
 
 Olhando para hieraquia vemos algum interessante, se **Dot11Elt** é um subcamada fields de um **Dot11**, isso quer dizer que temos mais informações pra analizar, mas o que temos de novo aqui agora é o tal do **Dot11** que na versão ele é um frame e um feilds layers, se não me engado essa coisas é montada parecido com TCP, quando pegamos um pacote raw lá em bytes. Vamos ver a implementação do Dot11Elt
 
@@ -392,7 +392,7 @@ Com o comando **iw** podemos mudar o canal em que nossa placa está escutando po
 OBS:
 Não vou colocar o código completo aqui, para excluir os **Script Kiddies** que estão lendo, nem sei se eles chegaram ate aqui.
 
-![gato_kiddies](/images/P0x01/meme_gato.png)
+![gato_kiddies](/images/P0x01/meme_gato.jpg)
 
 ## Conclusão 
 
