@@ -33,7 +33,7 @@ A rede sem fio IEEE 802.11, que também é conhecida como rede Wi-Fi, foi uma da
 
 ##  O scanner (Aircrack-ng)
 
-O aircrack-ng é feito em C puro (lindo), então claramente a performace vai ser muito melhor, mas a ideia aqui é aprender um pouco mais como funciona o processo de scanner. 
+O aircrack-ng é feito em C puro (lindo), então claramente a performance vai ser muito melhor, mas a ideia aqui é aprender um pouco mais como funciona o processo de scanner. 
 
 !["airdodump"](/images/P0x01/airdump-ng.png)
 
@@ -41,7 +41,7 @@ O que temos aqui é uma sessão do airdoump-ng, ferramenta que faz parte do airc
 
 ## Ambiente 
 
-O precisamos aqui é ter **root**, pois precisamos manipular pacotes e tambem mudar o modo de operação da nossa placa wifi, seja ela externa ou não, o acesso **root** sera essencial aqui. O python 3 qualquer versão que o **scapy** funcionar (acima da 2.3), e não menos importante o conhecimento básico de redes de computadores.
+O precisamos aqui é ter **root**, pois precisamos manipular pacotes e também mudar o modo de operação da nossa placa wifi, seja ela externa ou não, o acesso **root** será essencial aqui. O python 3 qualquer versão que o **scapy** funcionar (acima da 2.3), e não menos importante o conhecimento básico de redes de computadores.
 
 
 ### requirements
@@ -55,7 +55,7 @@ A placa wireless você pode usar a do seu notebook ou computador desde que ela t
 
 ## Packets on the fly - Python 
 
-Na imagem acima vimos que tem uma coluna chamada **beacons**, vou contar um segredo pra você,são eles que eremos capturar, pois eles tem as informações de cada AP (Access Point) que precisamos. então vamos comecar filtrando eles:
+Na imagem acima vimos que tem uma coluna chamada **beacons**, vou contar um segredo pra você,são eles que eremos capturar, pois eles tem as informações de cada AP (Access Point) que precisamos. então vamos começar filtrando eles:
 
 ``` python 
     if not pkt.haslayer(Dot11Elt):
@@ -73,11 +73,11 @@ info       : StrLenField                         = (b'')
 >>> 
 ```
 
-o-O, Parece que que queremos filtrar, são as informações de cada AP, então tudo deve está dentro desse StrLenField do tipo bytes ai **info**, a resposta é sim, mas ao mesmo tempo não. 
+o-O, Parece que queremos filtrar os dados desse **StrLenFields**, pois são as informações de cada AP, então tudo deve está dentro desse StrLenField do tipo bytes ai **info** ?, a resposta é sim, mas ao mesmo tempo não. 
 
 ![gato](/images/P0x01/gato_teorema.jpeg)
 
-Para explicar isso melhor precisamos entrender How the thinks works, primeiro que existe uma heraquia de camada no protocolo 802.11, examente como você ta pensando **802.11 Layers Hierarchy, let's me show you:
+Para explicar isso melhor precisamos entrender How the things works, primeiro que existe uma hierarquia de camada no protocolo 802.11, examente como você ta pensando **802.11 Layers Hierarchy, let's me show you:
 
 ``` sh
 [RadioTap]
@@ -99,7 +99,7 @@ Dentro do pacote principal, **RadioTap**, temos outras camadas que contém outro
     )
 ```
 
-Olhando para hieraquia vemos algum interessante, se **Dot11Elt** é um subcamada fields de um **Dot11**, isso quer dizer que temos mais informações pra analizar, mas o que temos de novo aqui agora é o tal do **Dot11** que na versão ele é um frame e um feilds layers, se não me engado essa coisas é montada parecido com TCP, quando pegamos um pacote raw lá em bytes. Vamos ver a implementação do Dot11Elt
+Olhando para hierarquia vemos algum interessante, se **Dot11Elt** é um subcamada fields de um **Dot11**, isso quer dizer que temos mais informações pra analizar, mas o que temos de novo aqui agora é o tal do **Dot11** que na versão ele é um frame e um fields layers, se não me engado essa coisas é montada parecido com TCP, quando pegamos um pacote raw lá em bytes. Vamos ver a implementação do Dot11Elt
 
 ``` python
   711 class Dot11Elt(Packet):
@@ -124,7 +124,7 @@ Olhando para hieraquia vemos algum interessante, se **Dot11Elt** é um subcamada
   730 
 ```
 
-Parece que acetamos não é mesmo, vamos ver o que temos no Dot11:
+Parece que acetamos não é mesmo, olhe so essa função **mysummary**, vamos ver o que temos no Dot11:
 
 ``` python
 >>> ls(Dot11)
@@ -140,11 +140,33 @@ SC         : LEShortField (Cond)                 = (0)
 addr4      : MACField (Cond)                     = ('00:00:00:00:00:00')
 ```
 
-Sem dúvidas chegamos onde queremos se tem **MACFields**, é porque tem informações importantes, vamos para documentação verificar o que são esses atributos.
+Sem dúvidas chegamos onde queremos, se tem **MACFields** é porque tem informações importantes, vamos para documentação verificar o que são esses fields.
+
+``` python
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|SUBTYPE|TYP|PRO|  CFE  |    FCFIELD    |           ID          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|       |                         ADDR1                         |
++-+-+-+-+                               +-+-+-+-+-+-+-+-+-+-+-+-+
+|                                       |         ADDR2         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                       +
+|                                                               |
++       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|       |                         ADDR3                         |
++-+-+-+-+                               +-+-+-+-+-+-+-+-+-+-+-+-+
+|                                       |           SC          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|       |                         ADDR4                         |
++-+-+-+-+                               +-+-+-+-+-+-+-+-+-+-+-+-+
+|                                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
 
 Documentation do11: [dot11 packet](https://scapy.readthedocs.io/en/latest/api/scapy.layers.dot11.html#id2)
 
-Os Campos são addr1, addr2, addr3, addr4, são macaddress que pode ser o mac do roteador que está emitindo aquele sinal em um determinado tipo de canal. Esses endereços mac não são padrão, isso mesmo, dependendo do tipo de configuração do **To DS** e **From DS** esses valores são trocados dentro do **Frame Control fields**, ou seja, dentro dot11. Dessa forma, no frame Dot11 não temos To DS e From DS nesse caso ambos campos são definidos como Zero. dessa forma, o campo addr3 fica definido como o BSSID da rede. Olhe so:
+Os Campos são addr1, addr2, addr3, addr4, são **Mac Address** que pode ser o mac do roteador que está emitindo aquele sinal em um determinado tipo de canal. Esses endereços mac não são padrão, isso mesmo, dependendo do tipo de configuração do **To DS** e **From DS** esses valores são trocados dentro do **Frame Control fields**, ou seja, dentro dot11. Dessa forma, no frame Dot11 não temos To DS e From DS nesse caso ambos campos são definidos como Zero. dessa forma, o campo addr3 fica definido como o BSSID da rede. Olhe so:
 
 ![imagem mac address](/images/P0x01/mac-address-01.png)
 
@@ -188,11 +210,11 @@ Agora já demos saltar essa informação já que ela é importante pra gente.
     client = pkt[Dot11].addr2
 ```
 
-A próxima informação que precisamos coletar é o CH **channel** ou a frequencia que esses dados estão sendo transmitdo. O canal no brasil vai de 1 a 11 se não me engano, eu não vou falar de 5Hz aqui, base é base vai mudar? vai, mas sabendo a base é so derivar (em cima e em baixo LOPITAU ), segura essa referência ai.
+A próxima informação que precisamos coletar é o CH **channel** ou a frequência que esses dados estão sendo transmitdo. O canal no brasil vai de 1 a 11 se não me engano, eu não vou falar de 5Hz aqui, base é base vai mudar? vai, mas sabendo a base é so derivar (em cima e em baixo LOPITAU ), segura essa referência ai.
 
 ![referencia](/images/P0x01/referencia.jpg)
 
-Sem mais delongas, existe muitas formas de capturar o CH, de um pacote Dot11Elt, uma dela é decodicar usando a camada do RadioTap, vamos ver ela no python.
+Sem mais delongas, existem muitas formas de capturar o CH, de um pacote Dot11Elt, uma dela é decodificar usando a camada do RadioTap, vamos ver ela no python.
 
 ``` python
 >>> ls(RadioTap)
@@ -255,7 +277,7 @@ lsig_rate  : BitField (Cond) (4 bits)            = (0)
 notdecoded : StrLenField                         = (b'')
 ```
 
-Não se iluda jovem, tem muita coisa ai nessa classe que pode ser sugerido ou até mesmo ignorado, mas as inforções que queremos estão definidas. O que queremos é o CH, logo temos:
+Não se iluda jovem, tem muita coisa ai nessa classe que pode ser sugerido ou até mesmo ignorado, mas as informações que queremos estão definidas. O que queremos é o CH, logo temos:
 
 ``` python
     channel = pkt[RadioTap].Channel
@@ -387,7 +409,7 @@ Se você rodar esse código tera um problema, ele vai capturar aglumas redes mas
           except KeyboardInterrupt:
               break
 ```
-Com o comando **iw** podemos mudar o canal em que nossa placa está escutando por redes wireless, com isso aguardando 1 s e depois mudando de canal randomicamente, dessa forma podemos varrer todas redes disponíveis que estão emitindo em um determinado tipo de frenquência.
+Com o comando **iw** podemos mudar o canal em que nossa placa está escutando por redes wireless, com isso aguardando 1 s e depois mudando de canal "randomicamente", dessa forma podemos varrer todas redes disponíveis que estão emitindo em um determinado tipo de frenquência.
 
 OBS:
 Não vou colocar o código completo aqui, para excluir os **Script Kiddies** que estão lendo, nem sei se eles chegaram ate aqui.
