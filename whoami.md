@@ -4,9 +4,9 @@ title: " About me"
 permalink: /whoami/
 ---
 
-Meu nome é Marcos Bomfim, mais conhecido como Marcos Nesster a.k.a **mh4x0f**, moro no interior da Bahia/Brasil.  just another **Computer programmer** e entusiasta da **Segurança da Informação**. programmer in C, C#, Python e se necessário ainda faço "baguncinha" em javascript,assembly e ruby.
+Meu nome é Marcos Bomfim, mais conhecido como Marcos Nesster a.k.a **mh4x0f**. just another **Computer programmer**, **Developer** e **Security Researcher**.
 
-Sou membro do grupo [**P0cl4bs Team**](https://github.com/P0cL4bs) (Open source IT security software tools), colaborador de projetos Software/Opensource ([**Rext**](https://github.com/j91321/rext), [**Shellsploit**](https://github.com/laudarch/Shellsploit), [**Empire**](https://github.com/EmpireProject/Empire)), atualmente trabalho como freelancer e sou desenvolvedor da melhor ferramenta **opensource** de teste de intrusão em redes wireless do mundo [**"the WiFi-Pumpkin"**](https://github.com/P0cL4bs/WiFi-Pumpkin). Além desse projeto e [**hanzoInjection**](https://github.com/P0cL4bs/hanzoInjection) pela **P0cl4bs Team**, desenvolvi outros projetos pessoais para security Red Team: bitifi, psdoor, mitmkin e kinproxy.
+Sou membro do grupo [**P0cl4bs Team**](https://github.com/P0cL4bs) (Open source IT security software tools), colaborador de projetos Software/Opensource ([**Rext**](https://github.com/j91321/rext), [**Shellsploit**](https://github.com/laudarch/Shellsploit), [**Empire**](https://github.com/EmpireProject/Empire)), atualmente trabalho como freelancer e sou desenvolvedor da melhor ferramenta **opensource** de teste de intrusão em redes wireless do mundo [**"wifipumpkin3"**](https://github.com/P0cL4bs/wifipumpkin3). Desenvolvi outros projetos pessoais para security Red Team: [b1tifi](https://github.com/mh4x0f/b1tifi), [mitmkin](https://github.com/mh4x0f/mitmkin), [kinproxy](https://github.com/mh4x0f/kinproxy) e [sslstrip3](https://github.com/mh4x0f/sslstrip3).
 
 Uso esse site para compartilhar informações sobre hacking e segurança da informação, alguns projetos e PoC. todos códigos e tools escritos aqui são **open source** e para fins educacionais. 
 
