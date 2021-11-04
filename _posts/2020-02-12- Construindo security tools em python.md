@@ -25,10 +25,13 @@ O conhecimento que você aprenderá com este curso é literalmente uma arma, sab
 - básico do sistema operacional linux
 - básico de redes de computadores
 
+### Cupom
+
+Eu sempre reverso um copom, no precinho, pra quem quer fazer o curso. então, se voce tem interesse, envie um email ou entre em contato pelo Youtube.
 
 Curso Udemy: [Construindo security tools em python](https://www.udemy.com/course/construindo-security-tools-em-python/)
 
-Canal: [MH4X0F](https://www.youtube.com/channel/UC_MiXXdVv-wPLHPk8sJ868A)
+Canal: [MH4X0F](https://www.youtube.com/channel/UCDHIWxjdl5z11u9xVDUekDg)
 
 Tools desenvolvida no curso : [Tools](https://github.com/mh4x0f/CursoSecurityToolsPython)
 
