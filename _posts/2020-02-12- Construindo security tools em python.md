@@ -27,7 +27,7 @@ O conhecimento que você aprenderá com este curso é literalmente uma arma, sab
 
 ### Cupom
 
-Eu sempre reverso um copom, no precinho, pra quem quer fazer o curso. então, se voce tem interesse, envie um email ou entre em contato pelo Youtube.
+Sempre ta rolando um copom, no precinho, pra quem quer fazer o curso. então, se voce tem interesse, envie um email ou entre em contato pelo Youtube.
 
 Curso Udemy: [Construindo security tools em python](https://www.udemy.com/course/construindo-security-tools-em-python/)
 
