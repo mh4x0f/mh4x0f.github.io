@@ -4,7 +4,7 @@ title: " About me"
 permalink: /whoami/
 ---
 
-Meu nome é Marcos Bomfim, mais conhecido como Marcos Nesster a.k.a **mh4x0f**. just another **Computer programmer**, **Developer** e **Security Researcher**.
+Meu nome é Marcos Bomfim, mais conhecido a.k.a **mh4x0f**. just another **Computer programmer**, **Developer** e **Security Researcher**.
 
 Sou membro do grupo [**P0cl4bs Team**](https://github.com/P0cL4bs) (Open source IT security software tools), colaborador de projetos Software/Opensource ([**Rext**](https://github.com/j91321/rext), [**Shellsploit**](https://github.com/laudarch/Shellsploit), [**Empire**](https://github.com/EmpireProject/Empire)), atualmente trabalho como freelancer e sou desenvolvedor da melhor ferramenta **opensource** de teste de intrusão em redes wireless do mundo [**"wifipumpkin3"**](https://github.com/P0cL4bs/wifipumpkin3). Desenvolvi outros projetos pessoais para security Red Team: [b1tifi](https://github.com/mh4x0f/b1tifi), [mitmkin](https://github.com/mh4x0f/mitmkin), [kinproxy](https://github.com/mh4x0f/kinproxy) e [sslstrip3](https://github.com/mh4x0f/sslstrip3).
 
